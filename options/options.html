@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <title>อ่านให้ — Settings</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+
+<div class="page">
+  <header class="page-header">
+    <div class="logo-mark">
+      <svg width="18" height="18" viewBox="0 0 16 16" fill="none">
+        <path d="M8 2L2 5.5V10.5L8 14L14 10.5V5.5L8 2Z" stroke="#5DCAA5" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="8" cy="8" r="1.5" fill="#5DCAA5"/>
+      </svg>
+    </div>
+    <div>
+      <div class="page-title">อ่านให้ (Arn-Hai)</div>
+      <div class="page-sub">Extension Settings</div>
+    </div>
+    <div class="save-status" id="save-status"></div>
+  </header>
+
+  <main class="sections">
+
+    <!-- ── AI Provider ── -->
+    <section class="section">
+      <h2 class="section-title">
+        🔑 AI Provider
+        <span class="badge-slot" style="background:#5DCAA5;color:#10221b">Extension-only</span>
+      </h2>
+      <p class="section-desc">
+        เลือก provider สำหรับวิเคราะห์ clause ที่ผ่านการลด token แล้วใน extension
+      </p>
+
+      <div class="ai-config-card">
+        <div class="config-row">
+          <label class="config-label">AI Provider</label>
+          <select id="opt-ai-provider" class="select">
+            <option value="openrouter">OpenRouter</option>
+            <option value="gemini">Google Gemini</option>
+            <option value="ollama">Ollama Local</option>
+          </select>
+        </div>
+
+        <div id="provider-openrouter" class="provider-settings">
+        <div class="config-row">
+          <label class="config-label">OpenRouter API Key</label>
+          <div style="position:relative">
+            <input type="password" id="opt-openrouter-key" class="input"
+              placeholder="sk-or-…  (วาง API Key ของคุณที่นี่)">
+            <button id="toggle-key-vis" class="key-eye" title="แสดง/ซ่อน Key">👁</button>
+          </div>
+          <p style="font-size:11px;color:var(--text3);margin-top:6px">
+            🔒 Key ถูกเก็บใน chrome.storage.local บนเครื่องของคุณเท่านั้น
+          </p>
+        </div>
+
+        <div class="config-row">
+          <label class="config-label">OpenRouter Model</label>
+          <input type="text" id="opt-openrouter-model" class="input"
+            placeholder="openrouter/free">
+          <p style="font-size:11px;color:var(--text3);margin-top:6px">
+            ค่าเริ่มต้นคือ openrouter/free สามารถเปลี่ยนเป็น model id อื่นของ OpenRouter ได้
+          </p>
+        </div>
+        <p style="font-size:11px;color:var(--text3);margin-top:6px">
+          Cloud mode: ส่งเฉพาะ selected clauses ที่ถูกลด token แล้วไปยัง OpenRouter
+        </p>
+        </div>
+
+        <div id="provider-gemini" class="provider-settings hidden">
+          <div class="config-row">
+            <label class="config-label">Gemini API Key</label>
+            <div style="position:relative">
+              <input type="password" id="opt-gemini-key" class="input"
+                placeholder="AIza…  (วาง Gemini API Key ของคุณที่นี่)">
+              <button id="toggle-gemini-key-vis" class="key-eye" title="แสดง/ซ่อน Key">👁</button>
+            </div>
+          </div>
+
+          <div class="config-row">
+            <label class="config-label">Gemini Model</label>
+            <input type="text" id="opt-gemini-model" class="input"
+              placeholder="gemini-flash-latest">
+          </div>
+          <p style="font-size:11px;color:var(--text3);margin-top:6px">
+            Cloud mode: ส่งเฉพาะ selected clauses ที่ถูกลด token แล้วไปยัง Google Gemini
+          </p>
+        </div>
+
+        <div id="provider-ollama" class="provider-settings hidden">
+          <div class="config-row">
+            <label class="config-label">Ollama Base URL</label>
+            <input type="text" id="opt-ollama-base-url" class="input"
+              placeholder="http://localhost:11434">
+          </div>
+
+          <div class="config-row">
+            <label class="config-label">Ollama Model</label>
+            <input type="text" id="opt-ollama-model" class="input"
+              placeholder="qwen2.5:3b">
+          </div>
+          <p style="font-size:11px;color:var(--text3);margin-top:6px">
+            ต้องเปิด Ollama บนเครื่องก่อน เช่น ollama serve และ pull model ที่ต้องการ<br>
+            ตัวอย่าง: ollama pull qwen2.5:3b<br>
+            Local mode: ข้อมูลถูกส่งไปยัง Ollama บนเครื่องของคุณ
+          </p>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button id="btn-test-key" class="btn btn-outline btn-sm">⚡ ทดสอบ Provider</button>
+          <span style="font-size:11px;color:var(--text3)">ทดสอบ provider ที่เลือกอยู่</span>
+        </div>
+
+        <div id="key-test-result" class="test-result hidden"></div>
+      </div>
+    </section>
+
+    <!-- ── Local Classifier ── -->
+    <section class="section">
+      <h2 class="section-title">Local Classifier</h2>
+
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">Enable Local Classifier</div>
+          <div class="option-sub">ใช้โมเดล ONNX/Transformers.js เพื่อ classify clause ใน browser</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="opt-local-classifier-enabled">
+          <span class="track"></span>
+        </label>
+      </div>
+
+      <div class="config-row" style="margin-top:12px">
+        <label class="config-label">Model ID</label>
+        <input type="text" id="opt-local-classifier-model" class="input"
+          placeholder="XChava/arn-hai-tos-mdeberta-v1">
+      </div>
+
+      <div class="config-row" style="margin-top:12px">
+        <label class="config-label">Device</label>
+        <select id="opt-local-classifier-device" class="select">
+          <option value="wasm">wasm</option>
+          <option value="webgpu">webgpu</option>
+        </select>
+      </div>
+
+      <div class="option-row" style="margin-top:12px">
+        <div class="option-info">
+          <div class="option-label">Enable Cloud Summary</div>
+          <div class="option-sub">ถ้าเปิด จะส่ง selected clauses ที่ลด token แล้วไป provider เพื่อทำ summary เพิ่ม</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="opt-local-classifier-cloud-summary">
+          <span class="track"></span>
+        </label>
+      </div>
+
+      <div class="option-row" style="margin-top:12px">
+        <div class="option-info">
+          <div class="option-label">Debug Logs</div>
+          <div class="option-sub">เปิด log เฉพาะ Local Classifier ใน background console</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="opt-local-classifier-debug">
+          <span class="track"></span>
+        </label>
+      </div>
+
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px">
+        <button id="btn-test-local-classifier" class="btn btn-outline btn-sm">Test Local Classifier</button>
+        <span style="font-size:11px;color:var(--text3)">ทดสอบโหลดโมเดลและ classify clause ตัวอย่าง</span>
+      </div>
+
+      <p class="section-desc" style="margin-top:12px;margin-bottom:0">
+        ใช้โมเดล ONNX/Transformers.js เพื่อ classify clause ใน browser โดยไม่ส่ง clause ออกนอกเครื่อง
+      </p>
+    </section>
+
+    <!-- ── General ── -->
+    <section class="section">
+      <h2 class="section-title">ทั่วไป</h2>
+
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">วิเคราะห์อัตโนมัติ</div>
+          <div class="option-sub">เปิด popup เมื่อพบหน้า Sign-up หรือ ToS</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="opt-auto-analyze">
+          <span class="track"></span>
+        </label>
+      </div>
+
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">แสดง Overlay บนหน้า</div>
+          <div class="option-sub">แสดง Risk Card ขณะอ่านเอกสาร ToS</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="opt-show-overlay">
+          <span class="track"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ── Display ── -->
+    <section class="section">
+      <h2 class="section-title">การแสดงผล</h2>
+
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">ภาษาสรุป</div>
+          <div class="option-sub">ภาษาที่ใช้ในบทสรุปจาก AI</div>
+        </div>
+        <select id="opt-language" class="select">
+          <option value="th">ไทย</option>
+          <option value="en">English</option>
+          <option value="th-en">ไทย + English</option>
+        </select>
+      </div>
+
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">Risk Threshold แจ้งเตือน</div>
+          <div class="option-sub">แสดง Overlay เมื่อคะแนนเกินกว่านี้</div>
+        </div>
+        <select id="opt-threshold" class="select">
+          <option value="40">40 — Low+</option>
+          <option value="60">60 — Medium+</option>
+          <option value="75">75 — High only</option>
+          <option value="90">90 — Critical</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- ── Privacy ── -->
+    <section class="section">
+      <h2 class="section-title">ความเป็นส่วนตัว</h2>
+
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">ไม่เก็บ ToS ที่วิเคราะห์</div>
+          <div class="option-sub">Ephemeral Processing — ประมวลผลแล้วลบทันที (PDPA)</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="opt-ephemeral" checked disabled>
+          <span class="track"></span>
+        </label>
+      </div>
+
+      <div class="option-row">
+        <div class="option-info">
+          <div class="option-label">ส่ง Anonymous Analytics</div>
+          <div class="option-sub">ช่วยพัฒนาโมเดล — ไม่มี PII</div>
+        </div>
+        <label class="toggle">
+          <input type="checkbox" id="opt-analytics">
+          <span class="track"></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- ── Save ── -->
+    <div class="footer-actions">
+      <button id="btn-clear-cache" class="btn btn-outline">ล้าง Cache</button>
+      <button id="btn-save" class="btn btn-primary">บันทึกการตั้งค่า</button>
+    </div>
+
+  </main>
+</div>
+
+<script src="options.js"></script>
+</body>
+</html>

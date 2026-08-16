@@ -1,0 +1,297 @@
+/* ============================================================
+   options.css — Arn-Hai Options Page
+   ============================================================ */
+
+:root {
+  --bg:     #f8f8fa;
+  --bg2:    #ffffff;
+  --bg3:    #f0f0f4;
+  --border: rgba(0,0,0,0.09);
+  --border2:rgba(0,0,0,0.14);
+  --text:   #111118;
+  --text2:  #6b6b7a;
+  --text3:  #aaaabc;
+  --accent: #1A1A2E;
+  --teal:   #5DCAA5;
+  --radius: 12px;
+  --mono:   'IBM Plex Mono', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:    #12121a;
+    --bg2:   #1a1a28;
+    --bg3:   #22222e;
+    --border: rgba(255,255,255,0.08);
+    --border2:rgba(255,255,255,0.13);
+    --text:  #e8e8f2;
+    --text2: #8888a8;
+    --text3: #555568;
+  }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'IBM Plex Sans Thai', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.page { max-width: 620px; margin: 0 auto; padding: 0 0 40px; }
+
+/* Header */
+.page-header {
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 0.5px solid var(--border);
+  background: var(--bg2);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.logo-mark {
+  width: 36px;
+  height: 36px;
+  background: #1A1A2E;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.page-title { font-size: 16px; font-weight: 600; }
+.page-sub   { font-size: 12px; color: var(--text2); }
+
+.save-status {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--text3);
+  font-family: var(--mono);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.save-status.visible { opacity: 1; color: #3B6D11; }
+
+/* Sections */
+.sections { padding: 20px 24px; display: flex; flex-direction: column; gap: 20px; }
+
+.section {
+  background: var(--bg2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+
+.section-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text2);
+  font-family: var(--mono);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-desc {
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 14px;
+  line-height: 1.6;
+}
+
+.badge-slot {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 5px;
+  background: #FAEEDA;
+  color: #854F0B;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Option Row */
+.option-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 0;
+  border-bottom: 0.5px solid var(--border);
+}
+
+.option-row:last-child { border-bottom: none; }
+
+.option-label { font-size: 13px; font-weight: 500; }
+.option-sub   { font-size: 11px; color: var(--text2); margin-top: 1px; }
+
+/* Toggle */
+.toggle { position: relative; width: 38px; height: 22px; cursor: pointer; flex-shrink: 0; }
+.toggle input { display: none; }
+
+.track {
+  display: block;
+  width: 38px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--border2);
+  transition: background 0.15s;
+  position: relative;
+}
+
+.track::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  top: 2px;
+  left: 2px;
+  transition: left 0.15s;
+}
+
+.toggle input:checked + .track { background: #1A1A2E; }
+.toggle input:checked + .track::after { left: 18px; }
+
+/* Select */
+.select {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 0.5px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+}
+
+.select-sm {
+  font-family: inherit;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 0.5px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text);
+  width: 100%;
+  outline: none;
+}
+
+/* AI Config Card */
+.ai-config-card {
+  background: var(--bg3);
+  border: 1px dashed var(--border2);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.config-row { display: flex; flex-direction: column; gap: 5px; }
+
+.config-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text2);
+  font-family: var(--mono);
+}
+
+.input {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 0.5px solid var(--border2);
+  background: var(--bg2);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input:focus { border-color: #5DCAA5; }
+
+.key-eye {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.5;
+}
+
+.model-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.model-info-label {
+  font-size: 11px;
+  color: var(--text2);
+  margin-bottom: 4px;
+  font-family: var(--mono);
+}
+
+.test-result {
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-family: var(--mono);
+}
+
+.test-result.success { background: #EAF3DE; color: #3B6D11; }
+.test-result.error   { background: #FCEBEB; color: #A32D2D; }
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border: 0.5px solid var(--border2);
+  background: var(--bg2);
+  color: var(--text);
+  transition: background 0.12s;
+}
+
+.btn:hover { background: var(--bg3); }
+
+.btn-primary {
+  background: #1A1A2E;
+  color: #fff;
+  border-color: #1A1A2E;
+}
+
+.btn-primary:hover { background: #2d2d4e; }
+.btn-sm { font-size: 12px; padding: 7px 12px; }
+
+.footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.hidden { display: none; }

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>อ่านให้ — ToS Analyzer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+
+  <!-- ── HEADER ── -->
+  <header class="header">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M8 2L2 5.5V10.5L8 14L14 10.5V5.5L8 2Z" stroke="#5DCAA5" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M8 2V8M8 8L14 5.5M8 8L2 5.5" stroke="#5DCAA5" stroke-width="1" stroke-linejoin="round"/>
+        <circle cx="8" cy="8" r="1.5" fill="#5DCAA5"/>
+      </svg>
+    </div>
+    <div class="brand">
+      <div class="brand-name">อ่านให้</div>
+      <div class="brand-sub">Arn-Hai · ToS + Scam Analyzer</div>
+    </div>
+    <div class="status-pill" id="status-pill">
+      <span class="status-dot"></span>
+      <span id="status-text">Scanning…</span>
+    </div>
+  </header>
+
+  <!-- ── IDLE STATE ── -->
+  <div id="state-idle" class="state">
+    <div class="idle-wrap">
+      <div class="idle-icon">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+          <path d="M20 5L5 13.75V26.25L20 35L35 26.25V13.75L20 5Z" stroke="#5DCAA5" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="20" cy="20" r="4" fill="#5DCAA5" opacity="0.4"/>
+        </svg>
+      </div>
+      <p class="idle-title">ไม่พบ ToS บนหน้านี้</p>
+      <p class="idle-desc">วางลิ้งค์หรือข้อความเพื่อวิเคราะห์<br>ทั้ง Terms of Service และ Scam Check</p>
+      <textarea id="manual-input" class="manual-input" placeholder="วาง URL หรือข้อความที่ต้องการตรวจ…&#10;(พิมพ์ &quot;test&quot; เพื่อดูตัวอย่างผลลัพธ์)"></textarea>
+      <div class="idle-btn-row">
+        <button id="btn-analyze-manual" class="btn btn-primary btn-full">วิเคราะห์ ToS</button>
+        <button id="btn-scam-check" class="btn btn-scam btn-full">⚠ ตรวจ Scam</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ANALYZING STATE ── -->
+  <div id="state-analyzing" class="state hidden">
+    <div class="analyzing-wrap">
+      <div class="spinner"></div>
+      <p class="analyzing-title" id="analyzing-title">กำลังวิเคราะห์…</p>
+      <p class="analyzing-desc">ตรวจ Clause และให้คะแนนความเสี่ยง<br>ใช้เวลาประมาณ 3-5 วินาที</p>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <p class="progress-label" id="progress-label">Initializing…</p>
+    </div>
+  </div>
+
+  <!-- ── RESULT STATE ── -->
+  <div id="state-result" class="state hidden">
+
+    <!-- TEST MODE BANNER -->
+    <div id="test-mode-banner" style="display:none;align-items:center;gap:8px;background:#2a2a1a;border:1px solid #8a7a00;border-radius:8px;padding:8px 12px;margin:0 12px 4px;font-size:11px;color:#d4bc00">
+      <span>🧪</span>
+      <span>Test Mode — ข้อมูลจำลอง ใส่ Gemini API Key ใน <a href="#" id="settings-link" style="color:#5DCAA5;text-decoration:underline">Settings</a> เพื่อวิเคราะห์จริง</span>
+    </div>
+
+    <!-- Risk Zone -->
+    <section class="risk-zone">
+      <div class="risk-site" id="risk-site">
+        <svg width="10" height="10" viewBox="0 0 10 10"><rect width="10" height="10" rx="2" fill="#3B82F6"/></svg>
+        <span id="site-url">loading…</span>
+      </div>
+      <div class="risk-main">
+        <div class="gauge-wrap">
+          <svg width="80" height="80" viewBox="0 0 80 80" style="transform:rotate(-90deg)">
+            <circle cx="40" cy="40" r="30" fill="none" stroke="var(--track)" stroke-width="6"/>
+            <circle cx="40" cy="40" r="30" fill="none" id="gauge-arc"
+              stroke="#E24B4A" stroke-width="6"
+              stroke-dasharray="188.5" stroke-dashoffset="0"
+              stroke-linecap="round"/>
+          </svg>
+          <div class="gauge-inner">
+            <span class="gauge-num" id="gauge-num">–</span>
+            <span class="gauge-label">risk</span>
+          </div>
+        </div>
+        <div class="risk-info">
+          <div class="risk-badge" id="risk-badge">
+            <span id="risk-icon">●</span>
+            <span id="risk-label">–</span>
+          </div>
+          <p class="risk-desc" id="risk-desc">กำลังโหลด…</p>
+        </div>
+      </div>
+      <div class="risk-compare" id="risk-compare" style="display:none">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="5" width="2" height="6" fill="currentColor"/><rect x="5" y="3" width="2" height="8" fill="currentColor"/><rect x="9" y="1" width="2" height="10" fill="currentColor"/></svg>
+        <span id="compare-text"></span>
+      </div>
+    </section>
+
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="flags">Red Flags</button>
+      <button class="tab" data-tab="summary">สรุป</button>
+      <button class="tab tab-scam" data-tab="scam">⚠ Scam</button>
+      <button class="tab" data-tab="ai">ถาม AI</button>
+    </nav>
+
+    <!-- Panel: Red Flags -->
+    <div id="panel-flags" class="panel">
+      <div class="clause-list" id="clause-list"></div>
+    </div>
+
+    <!-- Panel: Summary -->
+    <div id="panel-summary" class="panel hidden">
+      <div class="summary-list" id="summary-list"></div>
+    </div>
+
+    <!-- Panel: Scam Check ── NEW ── -->
+    <div id="panel-scam" class="panel hidden">
+      <!-- Scam Score -->
+      <div class="scam-header" id="scam-header">
+        <div class="scam-score-wrap">
+          <div class="scam-score-ring" id="scam-score-ring">
+            <svg width="64" height="64" viewBox="0 0 64 64" style="transform:rotate(-90deg)">
+              <circle cx="32" cy="32" r="24" fill="none" stroke="var(--track)" stroke-width="5"/>
+              <circle cx="32" cy="32" r="24" fill="none" id="scam-arc"
+                stroke="#E24B4A" stroke-width="5"
+                stroke-dasharray="150.8" stroke-dashoffset="150.8"
+                stroke-linecap="round"/>
+            </svg>
+            <div class="scam-score-inner">
+              <span class="scam-score-num" id="scam-score-num">–</span>
+            </div>
+          </div>
+          <div class="scam-score-info">
+            <div class="scam-level-badge" id="scam-level-badge">–</div>
+            <div class="scam-type-label" id="scam-type-label">กำลังตรวจสอบ…</div>
+          </div>
+        </div>
+        <div class="scam-ai-summary" id="scam-ai-summary" style="display:none"></div>
+      </div>
+
+      <!-- Scam Signals -->
+      <div id="scam-signals-wrap">
+        <div class="scam-section-title">🚨 สัญญาณที่พบ</div>
+        <div id="scam-signals-list" class="scam-signals-list"></div>
+      </div>
+
+      <!-- URL Flags -->
+      <div id="scam-url-wrap" style="display:none">
+        <div class="scam-section-title">🌐 ข้อสงสัย URL</div>
+        <div id="scam-url-list" class="scam-url-list"></div>
+      </div>
+
+      <!-- Advice -->
+      <div id="scam-advice-wrap" style="display:none">
+        <div class="scam-section-title">💡 คำแนะนำ</div>
+        <div id="scam-advice-list" class="scam-advice-list"></div>
+      </div>
+
+      <!-- Safe state -->
+      <div id="scam-safe" class="scam-safe" style="display:none">
+        <div class="scam-safe-icon">✓</div>
+        <div class="scam-safe-title">ไม่พบสัญญาณการหลอกลวง</div>
+        <div class="scam-safe-desc">ระบบไม่พบ pattern ที่น่าสงสัยบนหน้านี้<br>แต่ควรระมัดระวังเสมอ</div>
+      </div>
+
+      <!-- Scan button -->
+      <div class="scam-scan-row">
+        <button id="btn-run-scam" class="btn btn-scam btn-full">⚡ สแกน Scam ด้วย AI</button>
+      </div>
+    </div>
+
+    <!-- Panel: Ask AI -->
+    <div id="panel-ai" class="panel hidden">
+      <div class="ai-slot">
+        <div class="ai-slot-icon">⚙</div>
+        <div class="ai-slot-label">AI Chat — ขับเคลื่อนด้วย Gemini</div>
+        <div class="ai-slot-sub">ถามคำถามเกี่ยวกับ ToS หรือความปลอดภัยได้เลย</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chat-input" class="chat-input" placeholder="ถามเกี่ยวกับข้อกำหนดหรือ Scam นี้…">
+        <button id="chat-send" class="chat-send">→</button>
+      </div>
+      <div id="chat-log" class="chat-log"></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <button id="btn-export" class="btn btn-outline" title="ส่งออกรายงาน">📄 Export</button>
+      <button id="btn-open-web" class="btn btn-outline">↗ เปิดเว็บ</button>
+      <button id="btn-reanalyze" class="btn btn-primary">↺ วิเคราะห์ใหม่</button>
+    </footer>
+
+  </div>
+
+  <!-- ── ERROR STATE ── -->
+  <div id="state-error" class="state hidden">
+    <div class="error-wrap">
+      <div class="error-icon">✕</div>
+      <p class="error-title">วิเคราะห์ไม่สำเร็จ</p>
+      <p class="error-desc" id="error-desc"></p>
+      <button id="btn-retry" class="btn btn-primary">ลองอีกครั้ง</button>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

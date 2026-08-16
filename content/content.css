@@ -1,0 +1,220 @@
+/* ============================================================
+   content.css — Arn-Hai Overlay Styles
+   ทุก class ขึ้นต้น ah- เพื่อป้องกัน conflict กับ host page
+   ============================================================ */
+
+#arn-hai-overlay {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  font-family: 'Sarabun', 'IBM Plex Sans Thai', -apple-system, sans-serif;
+}
+
+#ah-card {
+  width: 320px;
+  background: #ffffff;
+  border: 0.5px solid rgba(0,0,0,0.12);
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+  animation: ah-slide-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes ah-slide-in {
+  from { opacity: 0; transform: translateY(16px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)  scale(1); }
+}
+
+/* Header */
+.ah-header {
+  padding: 11px 13px;
+  background: #1A1A2E;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: grab;
+  user-select: none;
+}
+
+.ah-logo {
+  width: 22px;
+  height: 22px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ah-header-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+  flex: 1;
+  letter-spacing: 0.01em;
+}
+
+.ah-close {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.5);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color 0.1s, background 0.1s;
+}
+
+.ah-close:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.1);
+}
+
+/* Traffic Light Strip */
+.ah-tl-strip {
+  display: flex;
+  border-bottom: 0.5px solid rgba(0,0,0,0.08);
+}
+
+.ah-tl-cell {
+  flex: 1;
+  padding: 10px 6px;
+  text-align: center;
+  border-right: 0.5px solid rgba(0,0,0,0.08);
+}
+
+.ah-tl-cell:last-child { border-right: none; }
+
+.ah-tl-num {
+  font-size: 18px;
+  font-weight: 700;
+  font-family: 'IBM Plex Mono', 'Courier New', monospace;
+  line-height: 1;
+}
+
+.ah-tl-sub {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
+}
+
+/* Flag List */
+.ah-flags {
+  padding: 6px 12px;
+}
+
+.ah-flag-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 0.5px solid rgba(0,0,0,0.06);
+}
+
+.ah-flag-row:last-child { border-bottom: none; }
+
+.ah-flag-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  width: 18px;
+  text-align: center;
+}
+
+.ah-flag-body { flex: 1; min-width: 0; }
+
+.ah-flag-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 1px;
+}
+
+.ah-flag-desc {
+  font-size: 10px;
+  color: #666;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ah-badge {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+/* AI Slot */
+.ah-ai-slot {
+  margin: 4px 12px 8px;
+  padding: 8px 10px;
+  background: #f5f5f5;
+  border: 1px dashed #ccc;
+  border-radius: 8px;
+  font-size: 10px;
+  color: #999;
+  text-align: center;
+}
+
+/* Footer */
+.ah-footer {
+  padding: 8px 12px;
+  display: flex;
+  gap: 7px;
+  border-top: 0.5px solid rgba(0,0,0,0.08);
+}
+
+.ah-btn {
+  flex: 1;
+  padding: 7px 0;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  border: 0.5px solid rgba(0,0,0,0.15);
+  background: #fff;
+  color: #333;
+  transition: background 0.12s;
+}
+
+.ah-btn:hover { background: #f5f5f5; }
+
+.ah-btn-primary {
+  background: #1A1A2E;
+  color: #fff;
+  border-color: #1A1A2E;
+}
+
+.ah-btn-primary:hover { background: #2d2d4e; }
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  #ah-card {
+    background: #1e1e2e;
+    border-color: rgba(255,255,255,0.1);
+  }
+  .ah-tl-cell { border-color: rgba(255,255,255,0.08); }
+  .ah-tl-strip { border-color: rgba(255,255,255,0.08); }
+  .ah-flag-row { border-color: rgba(255,255,255,0.06); }
+  .ah-flag-title { color: #eee; }
+  .ah-flag-desc { color: #aaa; }
+  .ah-tl-sub { color: #888; }
+  .ah-ai-slot { background: #2a2a3e; border-color: #444; color: #777; }
+  .ah-footer { border-color: rgba(255,255,255,0.08); }
+  .ah-btn { background: #2a2a3e; color: #ddd; border-color: rgba(255,255,255,0.15); }
+  .ah-btn:hover { background: #333350; }
+}
