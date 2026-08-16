@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "อ่านให้ (Arn-Hai) — ToS + Scam Analyzer",
   "short_name": "อ่านให้",
-  "version": "2.0.0",
-  "description": "วิเคราะห์ Terms of Service พร้อม Risk Score + ตรวจ Scam หลอกลงทุน Romance Scam Phishing และ Job Scam — ขับเคลื่อนด้วย OpenRouter, Gemini, Ollama และ Local AI",
+  "version": "1.2.0",
+  "description": "วิเคราะห์ Terms of Service พร้อม Risk Score + ตรวจ Scam หลอกลงทุน Romance Scam Phishing และ Job Scam — ขับเคลื่อนด้วย Google Gemini AI",
 
   "action": {
     "default_popup": "popup/popup.html",
@@ -12,13 +12,8 @@
 
   "options_page": "options/options.html",
 
-  "content_security_policy": {
-    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
-  },
-
   "background": {
-    "service_worker": "background/background.js",
-    "type": "module"
+    "service_worker": "background/background.js"
   },
 
   "content_scripts": [
@@ -32,28 +27,12 @@
 
   "permissions": [
     "activeTab",
-    "offscreen",
     "storage",
     "scripting",
     "tabs"
   ],
 
   "host_permissions": [
-    "https://openrouter.ai/*",
-    "https://huggingface.co/*",
-    "https://generativelanguage.googleapis.com/*",
-    "http://localhost:11434/*",
-    "http://127.0.0.1:11434/*",
     "<all_urls>"
-  ],
-
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "vendor/transformers/*",
-        "offscreen/*"
-      ],
-      "matches": ["<all_urls>"]
-    }
   ]
 }

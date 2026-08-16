@@ -25,159 +25,82 @@
 
   <main class="sections">
 
-    <!-- ── AI Provider ── -->
+    <!-- ── Google Gemini API Key ── -->
     <section class="section">
       <h2 class="section-title">
-        🔑 AI Provider
-        <span class="badge-slot" style="background:#5DCAA5;color:#10221b">Extension-only</span>
+        🔑 Google Gemini API Key
+        <span class="badge-slot" style="background:#4285F4">Google AI</span>
       </h2>
       <p class="section-desc">
-        เลือก provider สำหรับวิเคราะห์ clause ที่ผ่านการลด token แล้วใน extension
+        ใส่ API Key จาก <strong>Google AI Studio</strong> เพื่อเปิดใช้งานการวิเคราะห์ ToS ด้วย AI<br>
+        รับ Key ฟรีได้ที่: <a href="https://aistudio.google.com/apikey" target="_blank" style="color:#5DCAA5">aistudio.google.com/apikey</a>
       </p>
 
       <div class="ai-config-card">
         <div class="config-row">
-          <label class="config-label">AI Provider</label>
-          <select id="opt-ai-provider" class="select">
-            <option value="openrouter">OpenRouter</option>
-            <option value="gemini">Google Gemini</option>
-            <option value="ollama">Ollama Local</option>
-          </select>
-        </div>
-
-        <div id="provider-openrouter" class="provider-settings">
-        <div class="config-row">
-          <label class="config-label">OpenRouter API Key</label>
+          <label class="config-label">Gemini API Key</label>
           <div style="position:relative">
-            <input type="password" id="opt-openrouter-key" class="input"
-              placeholder="sk-or-…  (วาง API Key ของคุณที่นี่)">
+            <input type="password" id="opt-gemini-key" class="input"
+              placeholder="AIza…  (วาง API Key ของคุณที่นี่)">
             <button id="toggle-key-vis" class="key-eye" title="แสดง/ซ่อน Key">👁</button>
           </div>
           <p style="font-size:11px;color:var(--text3);margin-top:6px">
-            🔒 Key ถูกเก็บใน chrome.storage.local บนเครื่องของคุณเท่านั้น
-          </p>
-        </div>
-
-        <div class="config-row">
-          <label class="config-label">OpenRouter Model</label>
-          <input type="text" id="opt-openrouter-model" class="input"
-            placeholder="openrouter/free">
-          <p style="font-size:11px;color:var(--text3);margin-top:6px">
-            ค่าเริ่มต้นคือ openrouter/free สามารถเปลี่ยนเป็น model id อื่นของ OpenRouter ได้
-          </p>
-        </div>
-        <p style="font-size:11px;color:var(--text3);margin-top:6px">
-          Cloud mode: ส่งเฉพาะ selected clauses ที่ถูกลด token แล้วไปยัง OpenRouter
-        </p>
-        </div>
-
-        <div id="provider-gemini" class="provider-settings hidden">
-          <div class="config-row">
-            <label class="config-label">Gemini API Key</label>
-            <div style="position:relative">
-              <input type="password" id="opt-gemini-key" class="input"
-                placeholder="AIza…  (วาง Gemini API Key ของคุณที่นี่)">
-              <button id="toggle-gemini-key-vis" class="key-eye" title="แสดง/ซ่อน Key">👁</button>
-            </div>
-          </div>
-
-          <div class="config-row">
-            <label class="config-label">Gemini Model</label>
-            <input type="text" id="opt-gemini-model" class="input"
-              placeholder="gemini-flash-latest">
-          </div>
-          <p style="font-size:11px;color:var(--text3);margin-top:6px">
-            Cloud mode: ส่งเฉพาะ selected clauses ที่ถูกลด token แล้วไปยัง Google Gemini
-          </p>
-        </div>
-
-        <div id="provider-ollama" class="provider-settings hidden">
-          <div class="config-row">
-            <label class="config-label">Ollama Base URL</label>
-            <input type="text" id="opt-ollama-base-url" class="input"
-              placeholder="http://localhost:11434">
-          </div>
-
-          <div class="config-row">
-            <label class="config-label">Ollama Model</label>
-            <input type="text" id="opt-ollama-model" class="input"
-              placeholder="qwen2.5:3b">
-          </div>
-          <p style="font-size:11px;color:var(--text3);margin-top:6px">
-            ต้องเปิด Ollama บนเครื่องก่อน เช่น ollama serve และ pull model ที่ต้องการ<br>
-            ตัวอย่าง: ollama pull qwen2.5:3b<br>
-            Local mode: ข้อมูลถูกส่งไปยัง Ollama บนเครื่องของคุณ
+            🔒 Key ถูกเก็บใน Chrome Storage บนเครื่องของคุณเท่านั้น ไม่ได้ส่งออกไปที่อื่น
           </p>
         </div>
 
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <button id="btn-test-key" class="btn btn-outline btn-sm">⚡ ทดสอบ Provider</button>
-          <span style="font-size:11px;color:var(--text3)">ทดสอบ provider ที่เลือกอยู่</span>
+          <button id="btn-test-key" class="btn btn-outline btn-sm">⚡ ทดสอบ API Key</button>
+          <span style="font-size:11px;color:var(--text3)">ใช้ Gemini 2.0 Flash</span>
         </div>
 
         <div id="key-test-result" class="test-result hidden"></div>
       </div>
     </section>
 
-    <!-- ── Local Classifier ── -->
+    <!-- ── FastAPI Backend ── -->
     <section class="section">
-      <h2 class="section-title">Local Classifier</h2>
+      <h2 class="section-title">
+        ⚡ FastAPI Backend
+        <span class="badge-slot" style="background:#5DCAA5;color:#111">Local AI</span>
+      </h2>
+      <p class="section-desc">
+        ใช้โมเดลบนเครื่องของคุณผ่าน FastAPI เพื่อความเป็นส่วนตัวสูงสุดและไม่ต้องใช้ Credit
+      </p>
 
       <div class="option-row">
         <div class="option-info">
-          <div class="option-label">Enable Local Classifier</div>
-          <div class="option-sub">ใช้โมเดล ONNX/Transformers.js เพื่อ classify clause ใน browser</div>
+          <div class="option-label">Enable FastAPI Backend</div>
+          <div class="option-sub">เปิดใช้เซิร์ฟเวอร์ FastAPI แทน Cloud AI</div>
         </div>
         <label class="toggle">
-          <input type="checkbox" id="opt-local-classifier-enabled">
+          <input type="checkbox" id="opt-fastapi-enabled">
           <span class="track"></span>
         </label>
       </div>
 
-      <div class="config-row" style="margin-top:12px">
-        <label class="config-label">Model ID</label>
-        <input type="text" id="opt-local-classifier-model" class="input"
-          placeholder="XChava/arn-hai-tos-mdeberta-v1">
-      </div>
-
-      <div class="config-row" style="margin-top:12px">
-        <label class="config-label">Device</label>
-        <select id="opt-local-classifier-device" class="select">
-          <option value="wasm">wasm</option>
-          <option value="webgpu">webgpu</option>
-        </select>
-      </div>
-
-      <div class="option-row" style="margin-top:12px">
-        <div class="option-info">
-          <div class="option-label">Enable Cloud Summary</div>
-          <div class="option-sub">ถ้าเปิด จะส่ง selected clauses ที่ลด token แล้วไป provider เพื่อทำ summary เพิ่ม</div>
+      <div class="ai-config-card" id="fastapi-config-card" style="display:none">
+        <div class="config-row">
+          <label class="config-label">FastAPI Server URL</label>
+          <input type="text" id="opt-fastapi-url" class="input" placeholder="http://127.0.0.1:8000/classify">
         </div>
-        <label class="toggle">
-          <input type="checkbox" id="opt-local-classifier-cloud-summary">
-          <span class="track"></span>
-        </label>
-      </div>
 
-      <div class="option-row" style="margin-top:12px">
-        <div class="option-info">
-          <div class="option-label">Debug Logs</div>
-          <div class="option-sub">เปิด log เฉพาะ Local Classifier ใน background console</div>
+        <div class="option-row" style="padding:10px 0; border:none; margin:0">
+          <div class="option-info">
+            <div class="option-label" style="font-size:13px">Cloud AI Summary (Hybrid)</div>
+            <div class="option-sub" style="font-size:11px">ส่ง clause ที่แยกได้ไปทำ Summary บน Cloud (เช่น Gemini) หรือจบในเครื่อง</div>
+          </div>
+          <label class="toggle">
+            <input type="checkbox" id="opt-fastapi-cloud-summary">
+            <span class="track"></span>
+          </label>
         </div>
-        <label class="toggle">
-          <input type="checkbox" id="opt-local-classifier-debug">
-          <span class="track"></span>
-        </label>
-      </div>
 
-      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px">
-        <button id="btn-test-local-classifier" class="btn btn-outline btn-sm">Test Local Classifier</button>
-        <span style="font-size:11px;color:var(--text3)">ทดสอบโหลดโมเดลและ classify clause ตัวอย่าง</span>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+          <button id="btn-test-fastapi" class="btn btn-outline btn-sm">⚡ Test Connection</button>
+        </div>
+        <div id="fastapi-test-result" class="test-result hidden"></div>
       </div>
-
-      <p class="section-desc" style="margin-top:12px;margin-bottom:0">
-        ใช้โมเดล ONNX/Transformers.js เพื่อ classify clause ใน browser โดยไม่ส่ง clause ออกนอกเครื่อง
-      </p>
     </section>
 
     <!-- ── General ── -->

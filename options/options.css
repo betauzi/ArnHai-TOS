@@ -11,8 +11,8 @@
   --text:   #111118;
   --text2:  #6b6b7a;
   --text3:  #aaaabc;
-  --accent: #1A1A2E;
-  --teal:   #5DCAA5;
+  --accent: #3B5BDB;
+  --teal:   #12B886;
   --radius: 12px;
   --mono:   'IBM Plex Mono', monospace;
 }
@@ -58,7 +58,7 @@ body {
 .logo-mark {
   width: 36px;
   height: 36px;
-  background: #1A1A2E;
+  background: linear-gradient(135deg, #3B5BDB, #5C7CFA);
   border-radius: 9px;
   display: flex;
   align-items: center;
@@ -160,7 +160,7 @@ body {
   transition: left 0.15s;
 }
 
-.toggle input:checked + .track { background: #1A1A2E; }
+.toggle input:checked + .track { background: linear-gradient(135deg, #3B5BDB, #5C7CFA); }
 .toggle input:checked + .track::after { left: 18px; }
 
 /* Select */
@@ -279,7 +279,7 @@ body {
 .btn:hover { background: var(--bg3); }
 
 .btn-primary {
-  background: #1A1A2E;
+  background: linear-gradient(135deg, #3B5BDB, #5C7CFA);
   color: #fff;
   border-color: #1A1A2E;
 }

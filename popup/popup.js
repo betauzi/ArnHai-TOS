@@ -74,7 +74,6 @@ function bindEvents() {
     startScamCheckFromText(val || null);
   });
 
-  $('btn-export')?.addEventListener('click',    () => exportReport());
   $('btn-open-web')?.addEventListener('click',  () => chrome.tabs.create({ url: currentUrl }));
   $('btn-reanalyze')?.addEventListener('click', () => startAnalysis());
   $('btn-retry')?.addEventListener('click',     () => startAnalysis());
@@ -130,7 +129,6 @@ async function startAnalysis(manualInput = null) {
     showState('result');
     updateStatusPill('active');
     setProgress(100, 'Done');
-    highlightClausesOnPage();
   });
 }
 
@@ -243,11 +241,7 @@ function renderResult(r) {
   const scamTab = document.querySelector('.tab-scam');
   if (r.scam && r.scam.scamLevel !== 'SAFE' && scamTab) {
     const colors = { DANGER: '#E24B4A', WARNING: '#EF9F27', CAUTION: '#F5A623' };
-    scamTab.textContent = '';
-    const scamIcon = document.createElement('span');
-    scamIcon.style.color = colors[r.scam.scamLevel] || '#EF9F27';
-    scamIcon.textContent = '⚠';
-    scamTab.append(scamIcon, ' Scam');
+    scamTab.innerHTML = `<span style="color:${colors[r.scam.scamLevel]}">⚠</span> Scam`;
     renderScamPanel(r.scam);
   }
 }
@@ -256,28 +250,19 @@ function renderClauses(clauses) {
   const list = $('clause-list');
   list.innerHTML = '';
   if (!clauses || clauses.length === 0) {
-    const p = document.createElement('p');
-    p.style.cssText = 'padding:16px;text-align:center;font-size:12px;color:var(--text3)';
-    p.textContent = 'ไม่พบ Clause ที่น่าเป็นห่วง 🟢';
-    list.appendChild(p);
+    list.innerHTML = '<p style="padding:16px;text-align:center;font-size:12px;color:var(--text3)">ไม่พบ Clause ที่น่าเป็นห่วง 🟢</p>';
     return;
   }
   const catTh = { 'Data Sharing':'แชร์ข้อมูลกับ Third Party', 'Location Track':'Location Tracking', 'Data Retention':'เก็บข้อมูลหลังลบบัญชี', 'Arbitration':'ข้อกำหนดอนุญาโตตุลาการ', 'Auto-billing':'ต่ออายุอัตโนมัติ', 'User Rights':'สิทธิ์ผู้ใช้', 'General':'ทั่วไป' };
   clauses.forEach(c => {
     const div = document.createElement('div');
     div.className = 'clause-item';
-    const dot = document.createElement('div');
-    dot.className = 'risk-dot dot-' + (c.riskLevel || 'LOW');
-    const body = document.createElement('div');
-    body.style.flex = '1';
-    const title = document.createElement('div');
-    title.className = 'clause-text';
-    title.textContent = catTh[c.category] || c.category;
-    const cat = document.createElement('div');
-    cat.className = 'clause-cat';
-    cat.textContent = c.category + (c.section ? ' · Section ' + c.section : '');
-    body.append(title, cat);
-    div.append(dot, body);
+    div.innerHTML = `
+      <div class="risk-dot dot-${c.riskLevel}"></div>
+      <div style="flex:1">
+        <div class="clause-text">${c.text || ''}</div>
+        <div class="clause-cat">${catTh[c.category] || c.category}${c.section ? ' · Section ' + c.section : ''}</div>
+      </div>`;
     list.appendChild(div);
   });
 }
@@ -288,12 +273,7 @@ function renderSummary(items) {
   items.forEach((item, i) => {
     const div = document.createElement('div');
     div.className = 'summary-item';
-    const num = document.createElement('span');
-    num.className = 'sum-num';
-    num.textContent = (i + 1) + '.';
-    const txt = document.createElement('span');
-    txt.textContent = item;
-    div.append(num, txt);
+    div.innerHTML = `<span class="sum-num">${i + 1}.</span><span>${item}</span>`;
     list.appendChild(div);
   });
 }
@@ -338,13 +318,7 @@ function renderScamPanel(scam) {
     $('scam-advice-wrap').style.display  = 'none';
     $('scam-safe').style.display         = 'block';
     if (scam.isTosContext) {
-      const safeEl = $('scam-safe');
-      safeEl.textContent = '';
-      safeEl.append('✓ ไม่พบสัญญาณ Scam');
-      const note = document.createElement('span');
-      note.style.cssText = 'display:block;font-size:11px;color:var(--text2);font-weight:400;margin-top:4px';
-      note.textContent = 'หน้านี้เป็นเอกสาร ToS/Privacy Policy — คำศัพท์ด้านความปลอดภัยปกติถูก filter ออกแล้ว';
-      safeEl.appendChild(note);
+      $('scam-safe').innerHTML = '✓ ไม่พบสัญญาณ Scam<br><span style="font-size:11px;color:var(--text2);font-weight:400">หน้านี้เป็นเอกสาร ToS/Privacy Policy — คำศัพท์ด้านความปลอดภัยปกติถูก filter ออกแล้ว</span>';
     }
     return;
   }
@@ -355,25 +329,17 @@ function renderScamPanel(scam) {
   sigList.innerHTML = '';
   if (scam.signals && scam.signals.length > 0) {
     $('scam-signals-wrap').style.display = 'block';
-    const icons = { INVESTMENT:'📈', ROMANCE:'💔', PHISHING:'🎣', JOB:'💼', CRYPTO:'🪙', IMPERSONATION:'🎭' };
     scam.signals.forEach(s => {
       const div = document.createElement('div');
       div.className = 'scam-signal-item';
       const weightColor = s.weight >= 3 ? '#E24B4A' : '#EF9F27';
-      const iconEl = document.createElement('div');
-      iconEl.className = 'scam-signal-icon';
-      iconEl.textContent = icons[s.type] || '⚠';
-      const body = document.createElement('div');
-      body.className = 'scam-signal-body';
-      const title = document.createElement('div');
-      title.className = 'scam-signal-title';
-      title.style.color = weightColor;
-      title.textContent = s.signal;
-      const detail = document.createElement('div');
-      detail.className = 'scam-signal-detail';
-      detail.textContent = s.detail;
-      body.append(title, detail);
-      div.append(iconEl, body);
+      const icon = { INVESTMENT:'📈', ROMANCE:'💔', PHISHING:'🎣', JOB:'💼', CRYPTO:'🪙', IMPERSONATION:'🎭' };
+      div.innerHTML = `
+        <div class="scam-signal-icon">${icon[s.type] || '⚠'}</div>
+        <div class="scam-signal-body">
+          <div class="scam-signal-title" style="color:${weightColor}">${s.signal}</div>
+          <div class="scam-signal-detail">${s.detail}</div>
+        </div>`;
       sigList.appendChild(div);
     });
   } else {
@@ -388,12 +354,7 @@ function renderScamPanel(scam) {
     scam.urlFlags.forEach(f => {
       const div = document.createElement('div');
       div.className = 'scam-url-item';
-      const dot = document.createElement('span');
-      dot.className = 'scam-url-dot';
-      dot.textContent = '●';
-      const txt = document.createElement('span');
-      txt.textContent = f;
-      div.append(dot, txt);
+      div.innerHTML = `<span class="scam-url-dot">●</span><span>${f}</span>`;
       urlList.appendChild(div);
     });
   } else {
@@ -408,12 +369,7 @@ function renderScamPanel(scam) {
     scam.advice.forEach((a, i) => {
       const div = document.createElement('div');
       div.className = 'scam-advice-item';
-      const num = document.createElement('span');
-      num.className = 'scam-adv-num';
-      num.textContent = i + 1;
-      const txt = document.createElement('span');
-      txt.textContent = a;
-      div.append(num, txt);
+      div.innerHTML = `<span class="scam-adv-num">${i + 1}</span><span>${a}</span>`;
       advList.appendChild(div);
     });
   } else {
@@ -423,13 +379,7 @@ function renderScamPanel(scam) {
 
 function renderScamError(msg) {
   const wrap = $('scam-signals-list');
-  if (wrap) {
-    wrap.textContent = '';
-    const p = document.createElement('p');
-    p.style.cssText = 'padding:12px;color:var(--text2);font-size:12px';
-    p.textContent = 'เกิดข้อผิดพลาด: ' + (msg || 'ไม่ทราบสาเหตุ');
-    wrap.appendChild(p);
-  }
+  if (wrap) wrap.innerHTML = `<p style="padding:12px;color:var(--text2);font-size:12px">เกิดข้อผิดพลาด: ${msg || 'ไม่ทราบสาเหตุ'}</p>`;
 }
 
 // ── AI Chat ──
@@ -481,21 +431,12 @@ function showTestModeBanner(show) {
 }
 
 function showError(msg) {
-  const desc = $('error-desc');
-  desc.textContent = '';
+  $('error-desc').textContent = msg;
   if (msg.includes('API Key') || msg.includes('Gemini')) {
-    desc.textContent = msg;
-    desc.appendChild(document.createElement('br'));
-    desc.appendChild(document.createElement('br'));
-    const link = document.createElement('a');
-    link.href = '#';
-    link.id = 'go-settings';
-    link.style.cssText = 'color:#5DCAA5;text-decoration:underline';
-    link.textContent = '→ ไปที่ Settings เพื่อใส่ API Key';
-    link.addEventListener('click', e => { e.preventDefault(); chrome.runtime.openOptionsPage(); });
-    desc.appendChild(link);
-  } else {
-    desc.textContent = msg;
+    $('error-desc').innerHTML = msg + '<br><br><a href="#" id="go-settings" style="color:#5DCAA5;text-decoration:underline">→ ไปที่ Settings เพื่อใส่ API Key</a>';
+    setTimeout(() => {
+      $('go-settings')?.addEventListener('click', e => { e.preventDefault(); chrome.runtime.openOptionsPage(); });
+    }, 50);
   }
   showState('error');
   updateStatusPill('error');
@@ -520,90 +461,3 @@ function setProgress(pct, label) {
 function clearProgressAnim() { if (_progTimer) clearTimeout(_progTimer); }
 function isTosUrl(url)       { return /terms|privacy|policy|tos|ข้อกำหนด/i.test(url); }
 function getActiveTab()      { return new Promise(r => chrome.tabs.query({ active: true, currentWindow: true }, tabs => r(tabs[0]))); }
-
-// ── Export Report as Markdown ──
-function exportReport() {
-  if (!currentResult) return;
-  const r = currentResult;
-  const clauses  = Array.isArray(r.clauses)  ? r.clauses  : [];
-  const redFlags = Array.isArray(r.redFlags) ? r.redFlags : [];
-  const summary  = Array.isArray(r.summary)  ? r.summary  : [];
-  let hostname = 'unknown';
-  try { hostname = new URL(r.url).hostname; } catch {}
-  const riskEmoji = r.riskLevel === 'HIGH' ? '🔴' : r.riskLevel === 'MEDIUM' ? '🟡' : '🟢';
-  const dateStr = new Date(r.analyzedAt || Date.now()).toLocaleString('th-TH');
-
-  let md = `# 🛡 Arn-Hai ToS Analysis Report\n\n`;
-  md += `**Website:** ${hostname}  \n`;
-  md += `**URL:** ${r.url || 'N/A'}  \n`;
-  md += `**Analyzed:** ${dateStr}  \n`;
-  md += `**Risk Score:** ${riskEmoji} **${r.riskScore ?? 0}/100** (${r.riskLevel || 'LOW'})  \n`;
-  md += `\n---\n\n`;
-
-  if (summary.length > 0) {
-    md += `## 📋 Summary\n\n`;
-    summary.forEach((item, i) => { md += `${i + 1}. ${item}\n`; });
-    md += `\n`;
-  }
-  if (redFlags.length > 0) {
-    md += `## 🚩 Red Flags\n\n`;
-    md += `| # | Category | Risk | Confidence | Clause |\n`;
-    md += `|---|----------|------|------------|--------|\n`;
-    redFlags.forEach((c, i) => {
-      const icon = c.riskLevel === 'HIGH' ? '🔴' : c.riskLevel === 'MEDIUM' ? '🟡' : '🟢';
-      const conf = Number.isFinite(c.confidence) ? (c.confidence * 100).toFixed(0) + '%' : '-';
-      md += `| ${i + 1} | ${c.category} | ${icon} ${c.riskLevel} | ${conf} | ${(c.text || '').slice(0, 100).replace(/\|/g, '\\|')} |\n`;
-    });
-    md += `\n`;
-  }
-  if (clauses.length > 0) {
-    md += `## 📄 All Clauses (${clauses.length})\n\n`;
-    clauses.forEach((c, i) => {
-      const icon = c.riskLevel === 'HIGH' ? '🔴' : c.riskLevel === 'MEDIUM' ? '🟡' : '🟢';
-      md += `### ${i + 1}. ${c.category} ${icon}\n- **Risk:** ${c.riskLevel}\n- **Text:** ${c.text || '-'}\n\n`;
-    });
-  }
-  if (r.comparison) { md += `## 📊 Industry Comparison\n\n${r.comparison}\n\n`; }
-
-  // Scam section
-  if (r.scam && r.scam.scamLevel !== 'SAFE') {
-    md += `## ⚠ Scam Detection\n\n`;
-    md += `**Scam Score:** ${r.scam.scamScore}/100 (${r.scam.scamLevel})  \n`;
-    if (r.scam.dominantType) md += `**Type:** ${r.scam.dominantType.th || r.scam.dominantType.id}  \n`;
-    if (r.scam.signals?.length > 0) {
-      md += `\n### Signals\n\n`;
-      r.scam.signals.forEach(s => { md += `- **${s.signal}**: ${s.detail}\n`; });
-    }
-    if (r.scam.urlFlags?.length > 0) {
-      md += `\n### URL Flags\n\n`;
-      r.scam.urlFlags.forEach(f => { md += `- ${f}\n`; });
-    }
-    if (r.scam.advice?.length > 0) {
-      md += `\n### Advice\n\n`;
-      r.scam.advice.forEach((a, i) => { md += `${i + 1}. ${a}\n`; });
-    }
-    md += `\n`;
-  }
-
-  md += `---\n\n*Generated by อ่านให้ (Arn-Hai) ToS + Scam Analyzer*\n`;
-
-  const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `arn-hai-report-${hostname}-${Date.now()}.md`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-// ── Highlight risky clauses on page ──
-async function highlightClausesOnPage() {
-  if (!currentResult) return;
-  const tab = await getActiveTab();
-  if (!tab?.id) return;
-  const clauses = (currentResult.clauses || []).filter(c => c.riskLevel !== 'LOW' && c.text);
-  chrome.tabs.sendMessage(tab.id, {
-    type: 'HIGHLIGHT_CLAUSES',
-    clauses: clauses.map(c => ({ text: c.text.slice(0, 120), category: c.category, riskLevel: c.riskLevel }))
-  }).catch(() => {});
-}

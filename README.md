@@ -1,6 +1,6 @@
 # Arn-Hai ToS
 
-A Chrome extension that summarizes Terms of Service and Privacy Policy pages, evaluates potential risk, and flags common online-scam signals. The extension supports local analysis and optional AI providers configured by each user.
+A Chrome extension that analyzes Terms of Service and Privacy Policy pages, assigns a risk score, and flags common online-scam signals. It supports Google Gemini for AI analysis and an optional local FastAPI classifier.
 
 ## Features
 
@@ -8,20 +8,22 @@ A Chrome extension that summarizes Terms of Service and Privacy Policy pages, ev
 - Summarize content and assign a risk score with highlighted clauses.
 - Flag common investment, romance, phishing, job, crypto, and impersonation scam signals.
 - Analyze suspicious URLs and page structure.
-- Export analysis results and use the popup for follow-up questions.
+- Run an optional local FastAPI classifier for clause analysis.
 
 ## Technology
 
 - Chrome Extension Manifest V3
 - Vanilla JavaScript, HTML, and CSS
+- Google Gemini API
+- FastAPI, PyTorch, and Hugging Face Transformers
 - Rule-based risk and scam detection
-- Optional Google Gemini, OpenRouter, Ollama, and local-model integrations
 
 ## Requirements
 
 - Google Chrome or another Chromium-based browser
 - Developer mode enabled in the extensions page
-- An API key only when using an external AI provider
+- A Gemini API key when using Gemini analysis
+- Python 3.10 or later for the optional local classifier
 
 ## Getting Started
 
@@ -33,21 +35,34 @@ git clone https://github.com/betauzi/ArnHai-TOS.git
 2. Enable Developer mode.
 3. Select Load unpacked.
 4. Choose the cloned `ArnHai-TOS` folder.
-5. Open the extension settings and configure an AI provider only if needed.
+5. Open extension settings and enter a Gemini API key, or configure the local classifier.
 
 ## Available Commands
 
-This project has no build step. Load the repository directory directly as an unpacked extension. After changing source files, use the Reload button on `chrome://extensions/`.
+The extension has no build step. After changing source files, use the Reload button on `chrome://extensions/`.
+
+To start the optional local classifier:
+
+```bash
+cd fastapi_server
+python -m venv .venv
+.venv\\Scripts\\activate
+pip install -r requirements.txt
+uvicorn main:app --host 127.0.0.1 --port 8000
+```
+
+Enable FastAPI in extension settings and use `http://127.0.0.1:8000/classify` as the classifier URL.
 
 ## Configuration
 
-API keys are entered by the user through the extension settings and are stored in Chrome extension storage. They are not supplied through repository files. Use a separate, restricted key for local testing and revoke it immediately if it is exposed.
+API keys are entered through extension settings and stored in Chrome extension storage. The Gemini key is sent in the `x-goog-api-key` request header, not in URLs. Use a restricted key for local testing and revoke it immediately if it is exposed.
 
 ## Project Structure
 
 ```text
-background/           Service worker and provider requests
+background/           Service worker and Gemini/FastAPI integration
 content/              Page detection, highlights, and warnings
+fastapi_server/       Optional local text-classification service
 options/              Extension settings page
 popup/                Popup user interface
 risk-engine/          ToS risk analysis
@@ -58,7 +73,7 @@ manifest.json         Extension manifest
 
 ## Security Notes
 
-The extension sends API credentials in request headers, never in URLs. Review permissions and host permissions before publishing. Do not commit API keys, browser profiles, exported storage, or private model credentials.
+Review the extension's broad host permission before publishing. Do not commit API keys, browser profiles, exported Chrome storage, virtual environments, or FastAPI credentials. The local classifier downloads its model when it first starts.
 
 ## License
 

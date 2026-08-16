@@ -520,83 +520,8 @@
       sendResponse({ text: extractTosText(), isTos: detectTosPage(), pageInfo: inspectPageStructure(), url: location.href });
       return true;
     }
-    if (msg.type === 'HIGHLIGHT_CLAUSES' && Array.isArray(msg.clauses)) {
-      highlightClausesOnPage(msg.clauses);
-      sendResponse({ ok: true, highlighted: msg.clauses.length });
-      return true;
-    }
     sendResponse({ ok: true });
   });
-
-  // ── Visual Clause Highlighting on Page ──
-  const CLAUSE_CAT_TH = {
-    'Data Sharing':'แชร์ข้อมูลกับ Third Party', 'Location Track':'Location Tracking',
-    'Data Retention':'เก็บข้อมูลหลังลบบัญชี', 'Arbitration':'อนุญาโตตุลาการ',
-    'Auto-billing':'ต่ออายุอัตโนมัติ', 'User Rights':'สิทธิ์ผู้ใช้', 'General':'ทั่วไป'
-  };
-
-  function highlightClausesOnPage(clauses) {
-    // Remove existing highlights
-    document.querySelectorAll('.ah-highlight').forEach(el => {
-      const parent = el.parentNode;
-      if (parent) { parent.replaceChild(document.createTextNode(el.textContent), el); parent.normalize(); }
-    });
-    document.querySelectorAll('.ah-tooltip').forEach(el => el.remove());
-    if (!clauses || clauses.length === 0) return;
-
-    const root = document.querySelector('main, article, [role="main"], .content, #content, .terms, #terms') || document.body;
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
-    const textNodes = [];
-    while (walker.nextNode()) { if (walker.currentNode.textContent.trim().length > 20) textNodes.push(walker.currentNode); }
-
-    const lvlColors = {
-      HIGH:   { bg: 'rgba(226,75,74,0.15)', border: '#E24B4A', text: '#A32D2D' },
-      MEDIUM: { bg: 'rgba(239,159,39,0.12)', border: '#EF9F27', text: '#854F0B' }
-    };
-
-    for (const clause of clauses) {
-      if (!clause.text || clause.text.length < 15) continue;
-      const searchText = clause.text.slice(0, 100).toLowerCase().trim();
-      const colors = lvlColors[clause.riskLevel] || lvlColors.MEDIUM;
-
-      for (const node of textNodes) {
-        const matchLen = Math.min(searchText.length, 80);
-        const idx = node.textContent.toLowerCase().indexOf(searchText.slice(0, matchLen));
-        if (idx === -1) continue;
-
-        const range = document.createRange();
-        range.setStart(node, idx);
-        range.setEnd(node, Math.min(idx + matchLen, node.textContent.length));
-
-        const mark = document.createElement('mark');
-        mark.className = 'ah-highlight';
-        mark.style.cssText = 'background:' + colors.bg + ';border-bottom:2px solid ' + colors.border + ';padding:1px 2px;border-radius:2px;cursor:help;';
-
-        mark.addEventListener('mouseenter', function(e) {
-          document.querySelector('.ah-tooltip')?.remove();
-          const tip = document.createElement('div');
-          tip.className = 'ah-tooltip';
-          tip.style.cssText = 'position:fixed;z-index:2147483646;background:#1A1A2E;color:#fff;padding:8px 12px;border-radius:8px;font-size:12px;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,0.3);pointer-events:none;line-height:1.5;';
-          const badge = document.createElement('span');
-          badge.textContent = clause.riskLevel;
-          badge.style.cssText = 'display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;font-weight:600;margin-right:6px;background:' + colors.bg + ';color:' + colors.text + ';';
-          const label = document.createElement('span');
-          label.textContent = CLAUSE_CAT_TH[clause.category] || clause.category;
-          label.style.fontWeight = '600';
-          tip.append(badge, label);
-          document.body.appendChild(tip);
-          const rect = e.target.getBoundingClientRect();
-          tip.style.left = Math.min(rect.left, window.innerWidth - 320) + 'px';
-          tip.style.top = (rect.top - tip.offsetHeight - 8) + 'px';
-          if (parseFloat(tip.style.top) < 0) tip.style.top = (rect.bottom + 8) + 'px';
-        });
-        mark.addEventListener('mouseleave', function() { document.querySelector('.ah-tooltip')?.remove(); });
-
-        try { range.surroundContents(mark); } catch(e) {}
-        break;
-      }
-    }
-  }
 
   // ════════════════════════════════════
   //  Main — auto-run on page load
