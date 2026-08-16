@@ -1,31 +1,90 @@
-# Arn-Hai ToS
+<p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=DM+Sans&weight=700&size=30&pause=1200&color=22C55E&center=true&vCenter=true&width=860&lines=Read+the+fine+print.+Keep+your+rights.;Arn--Hai+makes+Terms+of+Service+understandable." alt="Arn-Hai: Read the fine print. Keep your rights.">
+</p>
 
-A Chrome extension that analyzes Terms of Service and Privacy Policy pages, assigns a risk score, and flags common online-scam signals. It supports Google Gemini for AI analysis and an optional local FastAPI classifier.
+<p align="center">
+  <strong>An AI-powered browser companion that automatically reads Terms of Service and privacy policies, then turns hidden conditions into clear risk signals.</strong>
+</p>
 
-## Features
+<p align="center">
+  <a href="#quick-start"><img src="https://img.shields.io/badge/Run-Load%20extension-16A34A?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Load extension"></a>
+  <a href="#how-it-works"><img src="https://img.shields.io/badge/Mission-Make%20consent%20informed-0EA5E9?style=for-the-badge&logo=shield&logoColor=white" alt="Make consent informed"></a>
+  <a href="#technology"><img src="https://img.shields.io/badge/Built%20with-Chrome%20MV3-0F172A?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Built with Chrome Manifest V3"></a>
+</p>
 
-- Detect Terms of Service and Privacy Policy pages.
-- Summarize content and assign a risk score with highlighted clauses.
-- Flag common investment, romance, phishing, job, crypto, and impersonation scam signals.
-- Analyze suspicious URLs and page structure.
-- Run an optional local FastAPI classifier for clause analysis.
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-Hackathon%20Winner-F59E0B?style=flat-square" alt="Hackathon winner">
+  <img src="https://img.shields.io/badge/Privacy-ToS%20%2B%20Policy-16A34A?style=flat-square" alt="ToS and privacy policy">
+  <img src="https://img.shields.io/badge/Analysis-Local%20%2B%20AI-0EA5E9?style=flat-square" alt="Local and AI analysis">
+</p>
+
+> [!NOTE]
+> **Champion of "Leagues of Code: AI & Cyber Security Hackathon ครั้งที่ 2"**
+>
+> - Winner's trophy and **15,000 THB** prize money
+> - A full scholarship at **Harbour.Space@UTCC, University of the Thai Chamber of Commerce**, for the entire program, valued at **6,800,000 THB**
+> - A **50% scholarship** for the Leagues of Code TH **AI Camp**, valued at **10,500 THB**
+
+## Why Arn-Hai Matters
+
+People accept Terms of Service and privacy policies every day without having the time or legal expertise to see what they are agreeing to. Critical conditions can affect personal data, location tracking, automatic billing, content ownership, and rights to dispute.
+
+**Arn-Hai helps people make consent informed, not automatic.** It reads long policy text, surfaces high-risk clauses, and explains the result in language people can act on before they click Accept.
+
+| Hidden in the fine print | Arn-Hai makes it visible | Why it matters |
+| :--- | :--- | :--- |
+| Data sharing and retention | Red flags and risk score | Know where personal data may go |
+| Location, billing, and arbitration terms | Clause-level summaries | Avoid surprises after accepting |
+| Suspicious wording and scam patterns | Safety signals and guidance | Pause before sharing money or credentials |
+
+## How It Works
+
+```mermaid
+flowchart LR
+    A["1. Open a ToS or privacy-policy page"] --> B["2. Arn-Hai extracts the important text"]
+    B --> C["3. Analyze risks, clauses, and scam signals"]
+    C --> D["4. See a clear score and plain-language summary"]
+    D --> E["5. Decide with context before accepting"]
+    style A fill:#e0f2fe,stroke:#0284c7,color:#0c4a6e
+    style B fill:#dcfce7,stroke:#16a34a,color:#14532d
+    style C fill:#fef3c7,stroke:#d97706,color:#78350f
+    style D fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+    style E fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
+```
+
+## What Arn-Hai Delivers
+
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>Readable policy insights</h3>
+      Detect Terms of Service and privacy-policy pages, summarize their meaning, and highlight clauses that deserve attention.
+    </td>
+    <td width="33%" valign="top">
+      <h3>Clear risk signals</h3>
+      Use a traffic-light risk score to make difficult legal text easier to compare and prioritize.
+    </td>
+    <td width="33%" valign="top">
+      <h3>Scam-aware browsing</h3>
+      Flag common investment, romance, phishing, job, crypto, and impersonation scam signals.
+    </td>
+  </tr>
+</table>
+
+> [!IMPORTANT]
+> Arn-Hai provides decision support, not legal advice or a guarantee that a website is safe. Always verify critical decisions with the service provider or a qualified professional.
 
 ## Technology
 
-- Chrome Extension Manifest V3
-- Vanilla JavaScript, HTML, and CSS
-- Google Gemini API
-- FastAPI, PyTorch, and Hugging Face Transformers
-- Rule-based risk and scam detection
+| Layer | Tools |
+| :--- | :--- |
+| Browser integration | Chrome Extension Manifest V3, Vanilla JavaScript |
+| AI analysis | Google Gemini API |
+| Local classifier | FastAPI, PyTorch, Hugging Face Transformers |
+| Detection | Rule-based ToS risk and scam-signal analysis |
+| Interface | HTML, CSS, Chrome Extension APIs |
 
-## Requirements
-
-- Google Chrome or another Chromium-based browser
-- Developer mode enabled in the extensions page
-- A Gemini API key when using Gemini analysis
-- Python 3.10 or later for the optional local classifier
-
-## Getting Started
+## Quick Start
 
 ```bash
 git clone https://github.com/betauzi/ArnHai-TOS.git
@@ -37,11 +96,7 @@ git clone https://github.com/betauzi/ArnHai-TOS.git
 4. Choose the cloned `ArnHai-TOS` folder.
 5. Open extension settings and enter a Gemini API key, or configure the local classifier.
 
-## Available Commands
-
-The extension has no build step. After changing source files, use the Reload button on `chrome://extensions/`.
-
-To start the optional local classifier:
+### Optional Local Classifier
 
 ```bash
 cd fastapi_server
@@ -53,11 +108,7 @@ uvicorn main:app --host 127.0.0.1 --port 8000
 
 Enable FastAPI in extension settings and use `http://127.0.0.1:8000/classify` as the classifier URL.
 
-## Configuration
-
-API keys are entered through extension settings and stored in Chrome extension storage. The Gemini key is sent in the `x-goog-api-key` request header, not in URLs. Use a restricted key for local testing and revoke it immediately if it is exposed.
-
-## Project Structure
+## Project Map
 
 ```text
 background/           Service worker and Gemini/FastAPI integration
@@ -71,9 +122,9 @@ vendor/               Third-party browser assets
 manifest.json         Extension manifest
 ```
 
-## Security Notes
+## Privacy and Security
 
-Review the extension's broad host permission before publishing. Do not commit API keys, browser profiles, exported Chrome storage, virtual environments, or FastAPI credentials. The local classifier downloads its model when it first starts.
+API keys are entered through extension settings and stored in Chrome extension storage. Gemini keys are sent in the `x-goog-api-key` request header, not in URLs. Review the extension's broad host permission before publishing, and never commit API keys, exported Chrome storage, virtual environments, or FastAPI credentials.
 
 ## License
 
