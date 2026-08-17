@@ -366,6 +366,32 @@ body {
 }
 
 /* ── Summary List ── */
+.summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px 4px;
+}
+.summary-title-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 11px;
+}
+@keyframes pulse-tts {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.tts-playing #tts-icon {
+  display: inline-block;
+  animation: pulse-tts 1s infinite;
+  color: var(--accent);
+}
+
 .summary-list { padding: 8px 14px; }
 
 .summary-item {

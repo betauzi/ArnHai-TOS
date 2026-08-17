@@ -371,7 +371,7 @@ ${truncatedText}
 """
 
 ตอบ JSON รูปแบบนี้เท่านั้น:
-{"riskScore":0-100,"riskLevel":"HIGH|MEDIUM|LOW","clauses":[{"category":"Data Sharing|Location Track|Data Retention|Arbitration|Auto-billing|User Rights|General","riskLevel":"HIGH|MEDIUM|LOW","confidence":0.0-1.0,"text":"สรุปสั้นภาษาไทยไม่เกิน 40 ตัว","section":"x.x หรือ null"}],"summary":["ประเด็น 1","ประเด็น 2","ประเด็น 3"]}
+{"riskScore":0-100,"riskLevel":"HIGH|MEDIUM|LOW","clauses":[{"category":"Data Sharing|Location Track|Data Retention|Arbitration|Auto-billing|User Rights|General","riskLevel":"HIGH|MEDIUM|LOW","confidence":0.0-1.0,"text":"สรุปสั้นภาษาไทยไม่เกิน 40 ตัว","section":"x.x หรือ null"}],"summary":["ประเด็น 1","ประเด็น 2","ประเด็น 3"],"ttsText":"นำประเด็น summary มาร้อยเรียงเป็นประโยคที่สละสลวย ใช้ภาษาพูดที่เป็นธรรมชาติ และใส่เครื่องหมายจุลภาค (,) เพื่อเว้นวรรคจังหวะให้ระบบ TTS อ่านออกเสียงได้ลื่นไหล"}
 
 กฎเข้ม: clauses สูงสุด 8 รายการ, summary 3-5 รายการ, text ใน clause ห้ามมี double-quote`;
 
@@ -397,6 +397,7 @@ ${truncatedText}
     clauses:   parsed.clauses || [],
     redFlags,
     summary:   parsed.summary || [],
+    ttsText:   parsed.ttsText || (parsed.summary ? parsed.summary.join(', ') : ''),
     industryBaseline: baseline,
     comparison: baseline
       ? `${baseline.name} เฉลี่ยอยู่ที่ ${baseline.avg} — บริการนี้${parsed.riskScore > baseline.avg ? `สูงกว่า ${parsed.riskScore - baseline.avg} คะแนน` : `ต่ำกว่า ${baseline.avg - parsed.riskScore} คะแนน`}`
@@ -469,13 +470,10 @@ function patchTruncatedJSON(s) {
 
 async function callGeminiAPI(apiKey, prompt) {
   const model    = 'gemini-flash-latest';
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
   const response = await fetch(endpoint, {
     method:  'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-goog-api-key': apiKey,
-    },
+    headers: { 'Content-Type': 'application/json' },
     body:    JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       generationConfig: {
@@ -562,6 +560,7 @@ function getMockResult(url) {
       'ข้อมูลถูกเก็บไว้ 90 วันหลังลบบัญชี ไม่ได้ลบทันที',
       'สิทธิ์ฟ้องร้องถูกจำกัดโดยข้อกำหนดอนุญาโตตุลาการ',
     ],
+    ttsText: 'ในบริการนี้, มีประเด็นสำคัญหลายอย่างที่คุณควรทราบ บริษัทสามารถนำรูปถ่ายและข้อมูลของคุณไปโฆษณาได้โดยไม่ต้องจ่ายเงิน, อีกทั้งยังมีการแชร์ข้อมูลส่วนตัวของคุณให้กับพาร์ทเนอร์ทั่วโลก. นอกจากนี้, บริการยังติดตามพิกัดของคุณอยู่เสมอ, และเก็บข้อมูลไว้นานถึง 90 วันแม้ลบบัญชีไปแล้ว.',
     industryBaseline: baseline,
     comparison: baseline ? `${baseline.name} เฉลี่ยอยู่ที่ ${baseline.avg} — บริการนี้สูงกว่า ${75 - baseline.avg} คะแนน` : 'Social Media เฉลี่ยอยู่ที่ 52 — บริการนี้สูงกว่า 23 คะแนน',
   };
@@ -691,6 +690,7 @@ async function analyzeWithFastapiOnly(text, url, settings) {
     clauses,
     redFlags,
     summary: clauses.length > 0 ? ['พบประเด็นความเสี่ยง (ประมวลผลด้วย Local AI)'] : ['ไม่พบความเสี่ยงที่ชัดเจน'],
+    ttsText: clauses.length > 0 ? 'พบประเด็นความเสี่ยงที่ต้องระวัง, โปรดตรวจสอบรายละเอียดเพิ่มเติม' : 'ไม่พบความเสี่ยงที่ชัดเจนในเอกสารฉบับนี้',
     industryBaseline: baseline,
     comparison: baseline ? `${baseline.name} เฉลี่ยอยู่ที่ ${baseline.avg} — บริการนี้ได้ ${riskScore} คะแนน` : null,
     fastapi: { status: 'used' }

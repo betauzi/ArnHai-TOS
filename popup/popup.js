@@ -11,8 +11,13 @@ let currentScam    = null;
 
 const $ = id => document.getElementById(id);
 const states = { idle: $('state-idle'), analyzing: $('state-analyzing'), result: $('state-result'), error: $('state-error') };
+let synth = window.speechSynthesis;
 
-document.addEventListener('DOMContentLoaded', async () => { await init(); bindEvents(); });
+document.addEventListener('DOMContentLoaded', async () => { 
+  synth.cancel(); // Clear any pending speech when popup opens
+  await init(); 
+  bindEvents(); 
+});
 
 async function init() {
   const tab  = await getActiveTab();
@@ -78,6 +83,7 @@ function bindEvents() {
   $('btn-reanalyze')?.addEventListener('click', () => startAnalysis());
   $('btn-retry')?.addEventListener('click',     () => startAnalysis());
   $('btn-run-scam')?.addEventListener('click',  () => runScamScan(true));
+  $('btn-play-tts')?.addEventListener('click',  toggleTTS);
 
   document.addEventListener('click', e => {
     if (e.target.id === 'settings-link' || e.target.id === 'go-settings') {
@@ -401,6 +407,103 @@ function appendChatMsg(text, role) {
   div.textContent = text;
   log.appendChild(div);
   log.scrollTop = log.scrollHeight;
+}
+
+// ── Text-to-Speech (TTS) ──
+let currentTtsText = '';
+let currentTtsIndex = 0;
+let isPlayingTTS = false;
+let isPausedTTS = false;
+
+function toggleTTS() {
+  if (!currentResult) return;
+  const btn = $('btn-play-tts');
+  const icon = $('tts-icon');
+  const label = $('tts-label');
+
+  if (isPlayingTTS) {
+    // สั่งหยุดทันที (ใช้ cancel แทน pause เพื่อลดความหน่วง)
+    isPausedTTS = true;
+    isPlayingTTS = false;
+    synth.cancel(); 
+    
+    btn.classList.remove('tts-playing');
+    icon.textContent = '▶';
+    label.textContent = 'เล่นต่อ';
+    return;
+  }
+
+  if (isPausedTTS) {
+    // เล่นต่อจากคำที่ค้างไว้
+    isPausedTTS = false;
+    playFromIndex(currentTtsIndex);
+    return;
+  }
+
+  // เริ่มอ่านใหม่ตั้งแต่ต้น
+  const textToRead = currentResult.ttsText || (currentResult.summary ? currentResult.summary.join(' ') : 'ไม่มีข้อมูลสรุป');
+  if (!textToRead) return;
+  
+  currentTtsText = textToRead;
+  currentTtsIndex = 0;
+  playFromIndex(0);
+}
+
+function playFromIndex(startIndex) {
+  if (!currentTtsText) return;
+  
+  const textToRead = currentTtsText.substring(startIndex);
+  if (!textToRead.trim()) {
+    resetTTSState();
+    return;
+  }
+
+  synth.cancel(); // รีเซ็ตเอนจินก่อน
+
+  const utterance = new SpeechSynthesisUtterance(textToRead);
+  utterance.lang = 'th-TH';
+  utterance.rate = 1.1;
+  
+  const voices = synth.getVoices();
+  const thaiVoice = voices.find(v => v.lang.includes('th') && v.localService) || voices.find(v => v.lang.includes('th'));
+  if (thaiVoice) utterance.voice = thaiVoice;
+
+  // จำตำแหน่งคำล่าสุด (คำนวณจาก text ที่ถูกตัด + index เดิม)
+  utterance.onboundary = (e) => {
+    currentTtsIndex = startIndex + e.charIndex;
+  };
+
+  utterance.onstart = () => {
+    isPlayingTTS = true;
+    const btn = $('btn-play-tts');
+    btn.classList.add('tts-playing');
+    $('tts-icon').textContent = '⏸';
+    $('tts-label').textContent = 'กำลังพูด...';
+  };
+
+  utterance.onend = () => {
+    if (isPausedTTS) return; // ถ้าเราตั้งใจหยุดเอง (pause) ไม่ต้องเคลียร์สถานะ
+    resetTTSState();
+  };
+
+  utterance.onerror = () => {
+    if (isPausedTTS) return;
+    resetTTSState();
+  };
+
+  synth.speak(utterance);
+}
+
+function resetTTSState() {
+  isPlayingTTS = false;
+  isPausedTTS = false;
+  currentTtsIndex = 0;
+  const btn = $('btn-play-tts');
+  if (btn) {
+    btn.classList.remove('tts-playing');
+    $('tts-icon').textContent = '🔊';
+    $('tts-label').textContent = 'ฟังเสียงสรุป';
+  }
 }
 
 // ── UI Helpers ──
